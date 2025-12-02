@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vintage Wholesale</title>
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --dark: #111827;
+            --darker: #0b0f19;
+            --card-bg: #1f2937;
+            --text: #f3f4f6;
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', sans-serif; }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 20px 40px;
+            background: var(--dark);
+            border-bottom: 1px solid #374151;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; text-transform: uppercase; }
+        .logo span { color: var(--primary); }
+
+        /* --- MAIN STAGE --- */
+        main {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* --- VIEW 1: THE WAREHOUSE (BAG SELECTION) --- */
+        #warehouse-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            width: 80%;
+            max-width: 1200px;
+            animation: fadeIn 1s ease;
+        }
+
+        .bale-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bale-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2); }
+        
+        /* The Shake Animation Class (Applied on Click) */
+        .shake-it {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .bale-img-container {
+            width: 100%;
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bale-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+        }
+
+        .bale-info { padding: 15px; text-align: center; }
+        .bale-tag { 
+            background: var(--primary); 
+            color: white; 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+        }
+
+        /* --- VIEW 2: THE REVEAL (ITEMS) --- */
+        #reveal-view {
+            display: none; 
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            min-height: 400px; /* Ensure space for animation */
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 10px;
+            opacity: 0; 
+            /* Initial state handled by JS/CSS vars */
+            transform: translate(var(--start-x), var(--start-y)) scale(0.1) rotate(var(--r));
+        }
+
+        .item-img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: white;
+            padding: 10px;
+        }
+
+        .action-bar {
+            margin-top: 30px;
+            padding: 20px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button.primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            white-space: nowrap;
+        }
+        button.primary-btn:hover { 
+            background: var(--primary-hover); 
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        /* --- VIEW 3: THE FORM (MODAL) --- */
+        #form-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #374151;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .form-container.active { transform: translateY(0); opacity: 1; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #9ca3af; }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: var(--darker);
+            border: 1px solid #374151;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        /* --- VIEW 4: SHIPPING ANIMATION --- */
+        #shipping-view {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--darker);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .box {
+            width: 200px;
+            height: 200px;
+            background: #d4a373;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        .tape {
+            position: absolute;
+            height: 100%;
+            width: 20px;
+            background: rgba(255,255,255,0.3);
+            top: 0; left: 50%; transform: translateX(-50%);
+        }
+        
+        .label {
+            width: 120px; height: 80px;
+            background: white; border-radius: 4px; padding: 10px;
+            font-size: 8px; color: black; font-family: monospace;
+            opacity: 0; 
+        }
+
+        .conveyor-belt {
+            width: 100%; height: 20px;
+            background: repeating-linear-gradient(90deg, #333 0px, #333 20px, #222 20px, #222 40px);
+            margin-top: 10px;
+            animation: moveBelt 1s linear infinite;
+        }
+
+        .success-tick {
+            color: var(--success);
+            font-size: 1.5rem;
+            margin-left: 10px;
+            animation: popIn 0.3s ease forwards;
+            display: inline-block;
+        }
+
+        /* --- MOBILE ADAPTATIONS --- */
+        @media (max-width: 600px) {
+            header { padding: 15px 20px; }
+            .logo { font-size: 1.2rem; }
+            
+            #warehouse-view {
+                width: 100%;
+                gap: 15px;
+                /* Adjust grid to fit 2 columns on mobile */
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bale-card { border-radius: 8px; }
+            .bale-img-container { height: 180px; } /* Smaller images */
+            .bale-info h3 { font-size: 0.9rem; }
+            .bale-info p { font-size: 0.7rem; }
+            
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .item-img { height: 100px; }
+            
+            .form-container { padding: 20px; width: 90%; }
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Dynamic Explosion from Specific Origin */
+        @keyframes explodeOutDynamic {
+            0% {
+                opacity: 0;
+                transform: translate(var(--start-x), var(--start-y)) scale(0.1) rotate(var(--r));
+            }
+            60% {
+                opacity: 1;
+                transform: translate(0, -20px) scale(1.1) rotate(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes packIntoBag {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0) translateY(200px); opacity: 0; }
+        }
+        @keyframes slideOutRight {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(200vw); }
+        }
+        @keyframes moveBelt {
+            from { background-position: 0 0; }
+            to { background-position: 40px 0; }
+        }
+        @keyframes popIn { 
+            0% { transform: scale(0); opacity: 0; } 
+            70% { transform: scale(1.2); } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
+
+        .packed-item { animation: packIntoBag 0.8s forwards ease-in-out; }
+        .box-leaves { animation: slideOutRight 1.5s ease-in forwards; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Bale<span>Drop</span></div>
+        <div style="color: #9ca3af; font-size: 0.8rem;">Wholesale Access</div>
+    </header>
+
+    <main>
+        <!-- STEP 1: SELECT BALE (Generated by JS below) -->
+        <div id="warehouse-view"></div>
+
+        <!-- STEP 2: REVEAL ITEMS -->
+        <div id="reveal-view">
+            <h2 style="margin-bottom: 10px;">Bale Contents</h2>
+            <div class="items-grid" id="items-container"></div>
+            <div class="action-bar">
+                <button class="primary-btn" onclick="repackAndBuy()">REPACK & SHIP</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- STEP 3: PRE-FILLED FORM -->
+    <div id="form-modal">
+        <div class="form-container" id="modal-content">
+            <h2 style="margin-bottom: 20px;">Shipping Details</h2>
+            <form id="shipping-form" onsubmit="event.preventDefault(); sendPackage();">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="input-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="input-address" readonly>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="input-city" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Postal Code</label>
+                    <input type="text" id="input-zip" readonly>
+                </div>
+                <button type="submit" class="primary-btn" style="width: 100%;">CONFIRM SHIPMENT</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STEP 4: SHIPPING ANIMATION -->
+    <div id="shipping-view">
+        <h2 id="shipping-text" style="margin-bottom: 30px; display:flex; align-items:center; justify-content:center;">Packing...</h2>
+        <div class="box" id="shipping-box">
+            <div class="tape"></div>
+            <div class="label" id="box-label">
+                <div style="border-bottom: 1px solid black; padding-bottom:2px; margin-bottom:2px;">PRIORITY MAIL</div>
+                <div id="label-name"></div>
+                <div id="label-addr"></div>
+                <div style="margin-top: 5px;">||| |||| || |||||</div>
+            </div>
+        </div>
+        <div class="conveyor-belt"></div>
+    </div>
+
+    <script>
+        /* =========================================
+           CONFIGURATION
+           ========================================= */
+        const baleConfig = [
+            { id: 1, title: "Children's Bundle", tag: "45kg Mix", img: "https://i.ibb.co/0pWD2yBJ/BATHROB-CHILDRENS-450x600-removebg-preview.png" },
+            { id: 2, title: "Heavy Vests", tag: "Winter Premium", img: "https://i.ibb.co/r2DFQTvr/CHALECO-ABIERTO-PESADO-removebg-preview.png" },
+            { id: 3, title: "Mixed Sort", tag: "Unsorted", img: "https://i.ibb.co/TBNVLV95/image-removebg-preview-1.png" },
+            { id: 4, title: "Nike/Jordan", tag: "Sneakers", img: "https://i.ibb.co/zVppWdGf/5.webp" } // Added a 4th to test grid
+        ];
+
+        const itemImages = [
+            "https://i.ibb.co/zVppWdGf/5.webp",
+            "https://i.ibb.co/tTSTQ91n/4.png",
+            "https://i.ibb.co/n99pjM0/1.webp",
+            "https://i.ibb.co/DgrcbPT9/2.webp",
+            "https://i.ibb.co/0pTQcdRB/3.webp"
+        ];
+
+        // --- RANDOM DATA GENERATOR ---
+        const firstNames = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia"];
+        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller"];
+        const streets = ["Maple Ave", "Oak Street", "Washington Blvd", "Highland Park", "Sunset Drive"];
+        const cities = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"];
+
+        function getRandomData() {
+            return {
+                name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
+                address: `${Math.floor(Math.random() * 9000) + 100} ${streets[Math.floor(Math.random() * streets.length)]}`,
+                city: cities[Math.floor(Math.random() * cities.length)],
+                zip: Math.floor(Math.random() * 89999) + 10000
+            };
+        }
+
+        // --- DOM ELEMENTS ---
+        const warehouseView = document.getElementById('warehouse-view');
+        const revealView = document.getElementById('reveal-view');
+        const itemsContainer = document.getElementById('items-container');
+        const formModal = document.getElementById('form-modal');
+        const modalContent = document.getElementById('modal-content');
+        const shippingView = document.getElementById('shipping-view');
+
+        // --- INITIALIZE WAREHOUSE ---
+        function initWarehouse() {
+            warehouseView.innerHTML = '';
+            baleConfig.forEach((bale) => {
+                const card = document.createElement('div');
+                card.className = 'bale-card';
+                card.id = `bale-${bale.id}`;
+                card.onclick = (e) => triggerBaleOpen(bale.id, e);
+                card.innerHTML = `
+                    <div class="bale-tag">${bale.tag}</div>
+                    <div class="bale-img-container">
+                        <img src="${bale.img}" class="bale-img" alt="${bale.title}">
+                    </div>
+                    <div class="bale-info">
+                        <h3>${bale.title}</h3>
+                        <p style="color:#9ca3af; font-size:0.9rem;">Click to Inspect</p>
+                    </div>
+                `;
+                warehouseView.appendChild(card);
+            });
+        }
+
+        // --- FUNCTION 1: TRIGGER OPENING (CALCULATE ORIGIN) ---
+        function triggerBaleOpen(id) {
+            const card = document.getElementById(`bale-${id}`);
+            card.classList.add('shake-it');
+
+            // 1. Get position of the clicked card relative to viewport
+            const rect = card.getBoundingClientRect();
+            
+            // 2. Calculate center of that card
+            const originX = rect.left + rect.width / 2;
+            const originY = rect.top + rect.height / 2;
+
+            // Wait for shake to finish, then explode items
+            setTimeout(() => {
+                openBale(id, originX, originY);
+            }, 500);
+        }
+
+        // --- FUNCTION 2: EXPLODE ITEMS FROM ORIGIN ---
+        function openBale(id, originX, originY) {
+            warehouseView.style.display = 'none';
+            revealView.style.display = 'block';
+
+            // Calculate center of the screen (where items will land approx)
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            // Calculate the offset (vector from center to clicked card)
+            // This tells the items where to "start" relative to their final centered position
+            const startX = originX - centerX;
+            const startY = originY - centerY;
+
+            itemsContainer.innerHTML = ''; 
+            
+            for(let i=0; i<8; i++) {
+                const imgUrl = itemImages[i % itemImages.length]; 
+                
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                
+                // Set CSS variables for this specific animation instance
+                card.style.setProperty('--start-x', `${startX}px`);
+                card.style.setProperty('--start-y', `${startY}px`);
+                
+                const randomRot = Math.floor(Math.random() * 60) - 30; 
+                card.style.setProperty('--r', `${randomRot}deg`);
+                
+                // Apply dynamic animation
+                card.style.animation = `explodeOutDynamic 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${i * 0.05}s`;
+                
+                card.innerHTML = `
+                    <img src="${imgUrl}" class="item-img">
+                    <div style="font-size:0.8rem; color:#ccc;">Size: ${Math.floor(Math.random()*4)+8} US</div>
+                    <div style="font-weight:bold;">Grade A</div>
+                `;
+                itemsContainer.appendChild(card);
+            }
+        }
+
+        // --- FUNCTION 3: REPACK ANIMATION ---
+        function repackAndBuy() {
+            const cards = document.querySelectorAll('.item-card');
+            cards.forEach((card, index) => {
+                card.classList.add('packed-item');
+                card.style.animationDelay = `${index * 0.03}s`;
+            });
+
+            setTimeout(() => {
+                revealView.style.display = 'none';
+                showForm();
+            }, 800);
+        }
+
+        // --- FUNCTION 4: SHOW FORM ---
+        function showForm() {
+            formModal.style.display = 'flex';
+            setTimeout(() => { modalContent.classList.add('active'); }, 10);
+
+            const data = getRandomData();
+            document.getElementById('input-name').value = data.name;
+            document.getElementById('input-address').value = data.address;
+            document.getElementById('input-city').value = data.city;
+            document.getElementById('input-zip').value = data.zip;
+
+            window.currentShipment = data;
+        }
+
+        // --- FUNCTION 5: SEND PACKAGE ---
+        function sendPackage() {
+            formModal.style.display = 'none';
+            shippingView.style.display = 'flex';
+
+            const shippingText = document.getElementById('shipping-text');
+            const boxLabel = document.getElementById('box-label');
+            const box = document.getElementById('shipping-box');
+
+            // Reset text just in case
+            shippingText.innerHTML = 'Packing...';
+
+            document.getElementById('label-name').innerText = window.currentShipment.name;
+            document.getElementById('label-addr').innerText = `${window.currentShipment.address}, ${window.currentShipment.city}`;
+
+            setTimeout(() => {
+                shippingText.innerText = "Labeling...";
+                boxLabel.style.transition = "opacity 0.5s";
+                boxLabel.style.opacity = 1; 
+            }, 1000);
+
+            setTimeout(() => {
+                shippingText.innerText = "Shipping...";
+                box.classList.add('box-leaves'); 
+            }, 2500);
+
+            setTimeout(() => {
+                // ADDING THE GREEN TICK HERE
+                shippingText.innerHTML = `DELIVERED <span class="success-tick">✔</span>`;
+                
+                setTimeout(() => { location.reload(); }, 2500);
+            }, 4000);
+        }
+
+        // Start App
+        initWarehouse();
+
+    </script>
+</body>
+</html>
