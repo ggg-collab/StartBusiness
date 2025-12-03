@@ -3,24 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vintage Wholesale</title>
+    <title>BaleDrop | Vintage Wholesale</title>
     <style>
-        /* --- RESET & BASE STYLES --- */
+        /* --- RESET & BASE STYLES (WHITE THEME) --- */
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --dark: #111827;
-            --darker: #0b0f19;
-            --card-bg: #1f2937;
-            --text: #f3f4f6;
-            --success: #10b981;
+            /* Palette Changes */
+            --primary: #2563eb;       /* Slightly darker blue for better contrast on white */
+            --primary-hover: #1d4ed8;
+            
+            --bg-body: #f3f4f6;       /* Light Gray Background */
+            --bg-header: #ffffff;     /* White Header */
+            --bg-card: #ffffff;       /* White Cards */
+            
+            --text-main: #111827;     /* Almost Black Text */
+            --text-secondary: #6b7280;/* Medium Gray Text */
+            
+            --border: #e5e7eb;        /* Light Borders */
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --success: #059669;       /* Darker Green for visibility */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--darker);
-            color: var(--text);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             overflow-x: hidden;
             height: 100vh;
             display: flex;
@@ -30,14 +39,15 @@
         /* --- HEADER --- */
         header {
             padding: 20px 40px;
-            background: var(--dark);
-            border-bottom: 1px solid #374151;
+            background: var(--bg-header);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; text-transform: uppercase; }
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; text-transform: uppercase; color: var(--text-main); }
         .logo span { color: var(--primary); }
 
         /* --- MAIN STAGE --- */
@@ -56,84 +66,92 @@
         #warehouse-view {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            width: 80%;
+            gap: 30px;
+            width: 90%;
             max-width: 1200px;
             animation: fadeIn 1s ease;
         }
 
         .bale-card {
-            background: var(--card-bg);
+            background: var(--bg-card);
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
         }
 
-        .bale-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2); }
+        .bale-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
         
-        /* The Shake Animation Class (Applied on Click) */
-        .shake-it {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake-it { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
 
         .bale-img-container {
             width: 100%;
             height: 300px;
-            background: rgba(255,255,255,0.05);
+            background: #f9fafb; /* Very light gray to distinguish from card */
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 10px;
         }
 
         .bale-img {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); /* Softer shadow for light theme */
+            pointer-events: none;
         }
 
         .bale-info { padding: 15px; text-align: center; }
+        .bale-info h3 { color: var(--text-main); font-size: 1.2rem; margin-bottom: 5px; }
+        .bale-info p { color: var(--text-secondary); }
+
         .bale-tag { 
             background: var(--primary); 
             color: white; 
-            padding: 5px 10px; 
+            padding: 5px 12px; 
             border-radius: 20px; 
-            font-size: 0.8rem; 
-            font-weight: bold;
+            font-size: 0.75rem; 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 2;
+            top: 10px; right: 10px; z-index: 2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* --- VIEW 2: THE REVEAL (ITEMS) --- */
         #reveal-view {
             display: none; 
-            width: 90%;
+            width: 100%;
             max-width: 1200px;
             text-align: center;
+            padding: 0 10px;
         }
+
+        #reveal-view h2 { color: var(--text-main); }
 
         .items-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            gap: 15px;
             margin-top: 20px;
-            min-height: 400px; /* Ensure space for animation */
+            position: relative;
         }
 
         .item-card {
-            background: var(--card-bg);
+            background: var(--bg-card);
             border-radius: 8px;
             padding: 10px;
             opacity: 0; 
-            /* Initial state handled by JS/CSS vars */
-            transform: translate(var(--start-x), var(--start-y)) scale(0.1) rotate(var(--r));
+            will-change: transform, opacity;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
 
         .item-img {
@@ -142,7 +160,7 @@
             object-fit: contain;
             border-radius: 4px;
             margin-bottom: 10px;
-            background: white;
+            background: #f9fafb; /* Light gray box for item */
             padding: 10px;
         }
 
@@ -159,27 +177,27 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 15px 60px;
-            font-size: 1.2rem;
+            padding: 16px 50px;
+            font-size: 1.1rem;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
             white-space: nowrap;
         }
         button.primary-btn:hover { 
             background: var(--primary-hover); 
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            box-shadow: 0 6px 10px rgba(37, 99, 235, 0.4);
         }
 
         /* --- VIEW 3: THE FORM (MODAL) --- */
         #form-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.5); /* Darker backdrop for contrast against white modal */
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -188,37 +206,41 @@
         }
 
         .form-container {
-            background: var(--card-bg);
-            padding: 40px;
+            background: var(--bg-card);
+            padding: 30px;
             border-radius: 16px;
             width: 100%;
             max-width: 400px;
-            border: 1px solid #374151;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             transform: translateY(50px);
             opacity: 0;
             transition: all 0.5s ease;
         }
 
+        .form-container h2 { color: var(--text-main); }
         .form-container.active { transform: translateY(0); opacity: 1; }
 
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #9ca3af; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
         .form-group input {
             width: 100%;
             padding: 12px;
-            background: var(--darker);
-            border: 1px solid #374151;
-            border-radius: 6px;
-            color: white;
+            background: #fff;
+            border: 1px solid #d1d5db; /* Gray-300 */
+            border-radius: 8px;
+            color: var(--text-main);
             font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
+        .form-group input:focus { border-color: var(--primary); ring: 2px solid var(--primary); }
 
         /* --- VIEW 4: SHIPPING ANIMATION --- */
         #shipping-view {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--darker);
+            background: var(--bg-body);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -226,6 +248,23 @@
             z-index: 100;
         }
 
+        .shipping-status {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #shipping-text { color: var(--text-main); }
+
+        .check-icon {
+            width: 40px; height: 40px;
+            fill: none; stroke: var(--success); stroke-width: 3;
+            stroke-dasharray: 50; stroke-dashoffset: 50;
+            transition: stroke-dashoffset 0.5s ease;
+            display: none;
+        }
+        
         .box {
             width: 200px;
             height: 200px;
@@ -235,14 +274,14 @@
             justify-content: center;
             align-items: center;
             border-radius: 4px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
         
         .tape {
             position: absolute;
             height: 100%;
             width: 20px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.4);
             top: 0; left: 50%; transform: translateX(-50%);
         }
         
@@ -251,52 +290,18 @@
             background: white; border-radius: 4px; padding: 10px;
             font-size: 8px; color: black; font-family: monospace;
             opacity: 0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .conveyor-belt {
             width: 100%; height: 20px;
-            background: repeating-linear-gradient(90deg, #333 0px, #333 20px, #222 20px, #222 40px);
+            background: repeating-linear-gradient(90deg, #d1d5db 0px, #d1d5db 20px, #9ca3af 20px, #9ca3af 40px); /* Lighter belt */
             margin-top: 10px;
             animation: moveBelt 1s linear infinite;
         }
 
-        .success-tick {
-            color: var(--success);
-            font-size: 1.5rem;
-            margin-left: 10px;
-            animation: popIn 0.3s ease forwards;
-            display: inline-block;
-        }
-
-        /* --- MOBILE ADAPTATIONS --- */
-        @media (max-width: 600px) {
-            header { padding: 15px 20px; }
-            .logo { font-size: 1.2rem; }
-            
-            #warehouse-view {
-                width: 100%;
-                gap: 15px;
-                /* Adjust grid to fit 2 columns on mobile */
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .bale-card { border-radius: 8px; }
-            .bale-img-container { height: 180px; } /* Smaller images */
-            .bale-info h3 { font-size: 0.9rem; }
-            .bale-info p { font-size: 0.7rem; }
-            
-            .items-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-            .item-img { height: 100px; }
-            
-            .form-container { padding: 20px; width: 90%; }
-        }
-
-        /* --- ANIMATIONS --- */
+        /* --- ANIMATIONS (Unchanged) --- */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
             20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -304,15 +309,15 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Dynamic Explosion from Specific Origin */
-        @keyframes explodeOutDynamic {
+        /* Dynamic Fly-Out Animation */
+        @keyframes flyFromBag {
             0% {
                 opacity: 0;
-                transform: translate(var(--start-x), var(--start-y)) scale(0.1) rotate(var(--r));
+                transform: translate(var(--dx), var(--dy)) scale(0.1) rotate(var(--r));
             }
             60% {
                 opacity: 1;
-                transform: translate(0, -20px) scale(1.1) rotate(0deg);
+                transform: translate(0, -20px) scale(1.05) rotate(0deg);
             }
             100% {
                 opacity: 1;
@@ -332,30 +337,47 @@
             from { background-position: 0 0; }
             to { background-position: 40px 0; }
         }
-        @keyframes popIn { 
-            0% { transform: scale(0); opacity: 0; } 
-            70% { transform: scale(1.2); } 
-            100% { transform: scale(1); opacity: 1; } 
-        }
 
-        .packed-item { animation: packIntoBag 0.8s forwards ease-in-out; }
-        .box-leaves { animation: slideOutRight 1.5s ease-in forwards; }
+        /* --- MOBILE ADAPTATIONS --- */
+        @media (max-width: 600px) {
+            header { padding: 15px 20px; }
+            .logo { font-size: 1.2rem; }
+            
+            #warehouse-view {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .bale-img-container { height: 220px; }
+
+            .items-grid {
+                grid-template-columns: 1fr 1fr; 
+                gap: 10px;
+            }
+
+            .item-img { height: 100px; padding: 5px; }
+            
+            button.primary-btn {
+                width: 100%;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">Bale<span>Drop</span></div>
-        <div style="color: #9ca3af; font-size: 0.8rem;">Wholesale Access</div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">Wholesale Access</div>
     </header>
 
     <main>
-        <!-- STEP 1: SELECT BALE (Generated by JS below) -->
+        <!-- STEP 1: SELECT BALE (Generated by JS) -->
         <div id="warehouse-view"></div>
 
         <!-- STEP 2: REVEAL ITEMS -->
         <div id="reveal-view">
-            <h2 style="margin-bottom: 10px;">Bale Contents</h2>
+            <h2 style="margin-bottom: 10px;">Contents</h2>
             <div class="items-grid" id="items-container"></div>
             <div class="action-bar">
                 <button class="primary-btn" onclick="repackAndBuy()">REPACK & SHIP</button>
@@ -384,14 +406,21 @@
                     <label>Postal Code</label>
                     <input type="text" id="input-zip" readonly>
                 </div>
-                <button type="submit" class="primary-btn" style="width: 100%;">CONFIRM SHIPMENT</button>
+                <button type="submit" class="primary-btn">CONFIRM SHIPMENT</button>
             </form>
         </div>
     </div>
 
     <!-- STEP 4: SHIPPING ANIMATION -->
     <div id="shipping-view">
-        <h2 id="shipping-text" style="margin-bottom: 30px; display:flex; align-items:center; justify-content:center;">Packing...</h2>
+        <div class="shipping-status">
+            <h2 id="shipping-text">Packing...</h2>
+            <!-- Green Tick SVG -->
+            <svg class="check-icon" id="check-icon" viewBox="0 0 24 24">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        
         <div class="box" id="shipping-box">
             <div class="tape"></div>
             <div class="label" id="box-label">
@@ -406,13 +435,12 @@
 
     <script>
         /* =========================================
-           CONFIGURATION
+           YOUR CONFIGURATION - IMAGES LOADED
            ========================================= */
         const baleConfig = [
             { id: 1, title: "Children's Bundle", tag: "45kg Mix", img: "https://i.ibb.co/0pWD2yBJ/BATHROB-CHILDRENS-450x600-removebg-preview.png" },
             { id: 2, title: "Heavy Vests", tag: "Winter Premium", img: "https://i.ibb.co/r2DFQTvr/CHALECO-ABIERTO-PESADO-removebg-preview.png" },
-            { id: 3, title: "Mixed Sort", tag: "Unsorted", img: "https://i.ibb.co/TBNVLV95/image-removebg-preview-1.png" },
-            { id: 4, title: "Nike/Jordan", tag: "Sneakers", img: "https://i.ibb.co/zVppWdGf/5.webp" } // Added a 4th to test grid
+            { id: 3, title: "Mixed Sort", tag: "Unsorted", img: "https://i.ibb.co/TBNVLV95/image-removebg-preview-1.png" }
         ];
 
         const itemImages = [
@@ -422,6 +450,7 @@
             "https://i.ibb.co/DgrcbPT9/2.webp",
             "https://i.ibb.co/0pTQcdRB/3.webp"
         ];
+        /* ========================================= */
 
         // --- RANDOM DATA GENERATOR ---
         const firstNames = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia"];
@@ -461,78 +490,86 @@
                     </div>
                     <div class="bale-info">
                         <h3>${bale.title}</h3>
-                        <p style="color:#9ca3af; font-size:0.9rem;">Click to Inspect</p>
+                        <p style="font-size:0.9rem;">Click to Inspect</p>
                     </div>
                 `;
                 warehouseView.appendChild(card);
             });
         }
 
-        // --- FUNCTION 1: TRIGGER OPENING (CALCULATE ORIGIN) ---
-        function triggerBaleOpen(id) {
+        // --- FUNCTION 1: TRIGGER OPENING (CALC ORIGIN) ---
+        function triggerBaleOpen(id, event) {
             const card = document.getElementById(`bale-${id}`);
-            card.classList.add('shake-it');
-
-            // 1. Get position of the clicked card relative to viewport
-            const rect = card.getBoundingClientRect();
             
-            // 2. Calculate center of that card
+            // 1. Get position of clicked card
+            const rect = card.getBoundingClientRect();
+            // Calculate center of clicked card
             const originX = rect.left + rect.width / 2;
             const originY = rect.top + rect.height / 2;
 
-            // Wait for shake to finish, then explode items
+            card.classList.add('shake-it');
+
             setTimeout(() => {
                 openBale(id, originX, originY);
             }, 500);
         }
 
         // --- FUNCTION 2: EXPLODE ITEMS FROM ORIGIN ---
-        function openBale(id, originX, originY) {
+        function openBale(id, startX, startY) {
             warehouseView.style.display = 'none';
             revealView.style.display = 'block';
 
-            // Calculate center of the screen (where items will land approx)
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-
-            // Calculate the offset (vector from center to clicked card)
-            // This tells the items where to "start" relative to their final centered position
-            const startX = originX - centerX;
-            const startY = originY - centerY;
-
             itemsContainer.innerHTML = ''; 
             
-            for(let i=0; i<8; i++) {
+            // Create items first so they have dimensions in the grid
+            const fragment = document.createDocumentFragment();
+            const itemCount = 8;
+            
+            for(let i=0; i<itemCount; i++) {
                 const imgUrl = itemImages[i % itemImages.length]; 
-                
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 
-                // Set CSS variables for this specific animation instance
-                card.style.setProperty('--start-x', `${startX}px`);
-                card.style.setProperty('--start-y', `${startY}px`);
-                
-                const randomRot = Math.floor(Math.random() * 60) - 30; 
-                card.style.setProperty('--r', `${randomRot}deg`);
-                
-                // Apply dynamic animation
-                card.style.animation = `explodeOutDynamic 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${i * 0.05}s`;
-                
+                // Add content
                 card.innerHTML = `
                     <img src="${imgUrl}" class="item-img">
-                    <div style="font-size:0.8rem; color:#ccc;">Size: ${Math.floor(Math.random()*4)+8} US</div>
-                    <div style="font-weight:bold;">Grade A</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">Size: ${Math.floor(Math.random()*4)+8} US</div>
+                    <div style="font-weight:bold; color:var(--text-main);">Grade A</div>
                 `;
-                itemsContainer.appendChild(card);
+                fragment.appendChild(card);
             }
+            itemsContainer.appendChild(fragment);
+
+            // NOW CALCULATE FLIGHT PATHS
+            requestAnimationFrame(() => {
+                const itemCards = document.querySelectorAll('.item-card');
+                
+                itemCards.forEach((card, index) => {
+                    const destRect = card.getBoundingClientRect();
+                    const destX = destRect.left + destRect.width / 2;
+                    const destY = destRect.top + destRect.height / 2;
+
+                    const dx = startX - destX;
+                    const dy = startY - destY;
+
+                    card.style.setProperty('--dx', `${dx}px`);
+                    card.style.setProperty('--dy', `${dy}px`);
+                    
+                    const randomRot = Math.floor(Math.random() * 60) - 30;
+                    card.style.setProperty('--r', `${randomRot}deg`);
+
+                    card.style.animation = `flyFromBag 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${index * 0.05}s`;
+                });
+            });
         }
 
         // --- FUNCTION 3: REPACK ANIMATION ---
         function repackAndBuy() {
             const cards = document.querySelectorAll('.item-card');
             cards.forEach((card, index) => {
-                card.classList.add('packed-item');
-                card.style.animationDelay = `${index * 0.03}s`;
+                card.style.animation = 'none'; // reset
+                card.offsetHeight; /* trigger reflow */
+                card.style.animation = `packIntoBag 0.6s forwards ease-in-out ${index * 0.03}s`;
             });
 
             setTimeout(() => {
@@ -563,35 +600,37 @@
             const shippingText = document.getElementById('shipping-text');
             const boxLabel = document.getElementById('box-label');
             const box = document.getElementById('shipping-box');
-
-            // Reset text just in case
-            shippingText.innerHTML = 'Packing...';
+            const checkIcon = document.getElementById('check-icon');
 
             document.getElementById('label-name').innerText = window.currentShipment.name;
             document.getElementById('label-addr').innerText = `${window.currentShipment.address}, ${window.currentShipment.city}`;
 
+            // 1. Labeling
             setTimeout(() => {
                 shippingText.innerText = "Labeling...";
                 boxLabel.style.transition = "opacity 0.5s";
                 boxLabel.style.opacity = 1; 
             }, 1000);
 
+            // 2. Shipping
             setTimeout(() => {
                 shippingText.innerText = "Shipping...";
                 box.classList.add('box-leaves'); 
             }, 2500);
 
+            // 3. Delivered & Tick
             setTimeout(() => {
-                // ADDING THE GREEN TICK HERE
-                shippingText.innerHTML = `DELIVERED <span class="success-tick">✔</span>`;
+                shippingText.innerText = "DELIVERED";
+                shippingText.style.color = "var(--success)"; 
+                checkIcon.style.display = "block";
+                setTimeout(() => { checkIcon.style.strokeDashoffset = 0; }, 50);
                 
-                setTimeout(() => { location.reload(); }, 2500);
+                // Reset
+                setTimeout(() => { location.reload(); }, 3000);
             }, 4000);
         }
 
-        // Start App
         initWarehouse();
-
     </script>
 </body>
 </html>
